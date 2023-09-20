@@ -31,17 +31,21 @@ class AuthController extends Controller
             'ApiKey' => config('shopify-app.api_key'),
             'SharedSecret' => config('shopify-app.shared_secret'),
         ]);
-        $accessToken = AuthHelper::createAuthRequest(
+        $accessTokenOrAuthUrl = AuthHelper::createAuthRequest(
             config('shopify-app.scopes'),
+            return: true,
         );
+        if (filter_var($accessTokenOrAuthUrl, FILTER_VALIDATE_URL)) {
+            return redirect()->away($accessTokenOrAuthUrl);
+        }
 
-        if (!isset($accessToken)) {
+        if (!isset($accessTokenOrAuthUrl)) {
             throw new UnauthorizedException('Access token missing from auth response.');
         }
 
         $shopData = (new ShopifySDK([
             'ShopUrl' => $request->input('shop'),
-            'AccessToken' => $accessToken,
+            'AccessToken' => $accessTokenOrAuthUrl,
         ]))->Shop->get();
 
         $user = config('shopify-app.user_model')::firstOrCreate(
@@ -51,7 +55,7 @@ class AuthController extends Controller
             [
                 'email' => $shopData['email'],
                 'name' => $shopData['shop_owner'],
-                'access_token' => $accessToken,
+                'access_token' => $accessTokenOrAuthUrl,
                 'shop' => $shopData['name'],
             ],
         );
