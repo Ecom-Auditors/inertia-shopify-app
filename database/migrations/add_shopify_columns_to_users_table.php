@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        dd(config('shopify-app.user_model'), app(config('shopify-app.user_model')));
         $table = app(config('shopify-app.user_model'))->getTable();
 
         Schema::table($table, function (Blueprint $table) {
