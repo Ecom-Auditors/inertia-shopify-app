@@ -61,8 +61,8 @@ class AuthController extends Controller
             ],
         );
 
-        Cache::forever('host_'.$shop, fn () => $request->input('host'));
-        Cache::forever('frame-ancestor_'.$shop, fn () => 'https://'.$shop);
+        Cache::forever('host_'.$shop, $request->input('host'));
+        Cache::forever('frame-ancestor_'.$shop, 'https://'.$shop);
 
         return Inertia::render('Token', [
             'shop' => $shop,
