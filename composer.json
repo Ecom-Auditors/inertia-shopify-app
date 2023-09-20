@@ -1,0 +1,31 @@
+{
+    "name": "ecom-auditors/inertia-shopify-app",
+    "description": "Turn your Laravel Inertia project into an embedded Shopify App.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "EcomAuditors\\InertiaShopifyApp\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alice Graham",
+            "email": "alice@ecomauditors.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^10.0",
+        "firebase/php-jwt": "^6.8",
+        "phpclassic/php-shopify": "^1.2",
+        "inertiajs/inertia-laravel": "^0.6.10"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "EcomAuditors\\LaravelShopifyApp\\ShopifyAppServiceProvider"
+            ]
+        }
+    }
+}
