@@ -70,8 +70,6 @@ class AuthController extends Controller
             fn () => 'https://'.$shop,
         );
 
-        dd('test');
-
         return Inertia::render('Token', [
             'shop' => $shop,
             'host' => $request->input('host'),
