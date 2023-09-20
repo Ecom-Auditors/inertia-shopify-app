@@ -26,8 +26,9 @@ class AuthController extends Controller
             throw new UnauthorizedException('Shop missing from auth response.');
         }
 
+        $shop = $request->input('shop');
         ShopifySDK::config([
-            'ShopUrl' => $request->input('shop'),
+            'ShopUrl' => $shop,
             'ApiKey' => config('shopify-app.api_key'),
             'SharedSecret' => config('shopify-app.shared_secret'),
         ]);
@@ -44,13 +45,13 @@ class AuthController extends Controller
         }
 
         $shopData = (new ShopifySDK([
-            'ShopUrl' => $request->input('shop'),
+            'ShopUrl' => $shop,
             'AccessToken' => $accessTokenOrAuthUrl,
         ]))->Shop->get();
 
         $user = config('shopify-app.user_model')::firstOrCreate(
             [
-                'domain' => $request->input('shop'),
+                'domain' => $shop,
             ],
             [
                 'email' => $shopData['email'],
@@ -61,16 +62,18 @@ class AuthController extends Controller
         );
 
         Cache::rememberForever(
-            'host_'.$request->input('shop'),
+            'host_'.$shop,
             fn () => $request->input('host'),
         );
         Cache::rememberForever(
-            'frame-ancestor_'.$request->input('shop'),
-            fn () => 'https://'.$request->input('shop'),
+            'frame-ancestor_'.$shop,
+            fn () => 'https://'.$shop,
         );
 
+        dd('test');
+
         return Inertia::render('Token', [
-            'shop' => $request->input('shop'),
+            'shop' => $shop,
             'host' => $request->input('host'),
         ]);
     }
