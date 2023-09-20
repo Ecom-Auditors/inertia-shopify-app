@@ -35,13 +35,13 @@ class AuthController extends Controller
             config('shopify-app.scopes'),
         );
 
-        if (!isset($response['access_token'])) {
+        if (!isset($accessToken)) {
             throw new UnauthorizedException('Access token missing from auth response.');
         }
 
         $shopData = (new ShopifySDK([
             'ShopUrl' => $request->input('shop'),
-            'AccessToken' => $response['access_token'],
+            'AccessToken' => $accessToken,
         ]))->Shop->get();
 
         $user = config('shopify-app.user_model')::firstOrCreate(
@@ -51,7 +51,7 @@ class AuthController extends Controller
             [
                 'email' => $shopData['email'],
                 'name' => $shopData['shop_owner'],
-                'access_token' => $response['access_token'],
+                'access_token' => $accessToken,
                 'shop' => $shopData['name'],
             ],
         );
