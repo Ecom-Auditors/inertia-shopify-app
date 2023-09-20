@@ -3,6 +3,7 @@
     "description": "Turn your Laravel Inertia project into an embedded Shopify App.",
     "type": "library",
     "license": "MIT",
+    "version": "1.0.0",
     "autoload": {
         "psr-4": {
             "EcomAuditors\\InertiaShopifyApp\\": "src/"
