@@ -12,9 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         $table = app(config('shopify-app.user_model'))->getTable();
-        if (! $table) {
-            return;
-        }
+        dd(config('shopify-app.user_model'), app(config('shopify-app.user_model'))->getTable());
 
         Schema::table($table, function (Blueprint $table) {
             $table->string('domain')->nullable();
