@@ -6,7 +6,7 @@ use EcomAuditors\InertiaShopifyApp\Http\Middleware\HandleAppBridge;
 use EcomAuditors\InertiaShopifyApp\Http\Middleware\ProtectIframe;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(ProtectIframe::class)->group(function () {
+Route::middleware(['web', ProtectIframe::class])->group(function () {
     Route::get('auth/callback', [AuthController::class, 'callback'])->name('auth.callback');
 
     Route::middleware(HandleAppBridge::class)->group(function () {
