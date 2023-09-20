@@ -14,6 +14,19 @@ use PHPShopify\ShopifySDK;
 
 class AuthController extends Controller
 {
+    public function token(Request $request): Response
+    {
+        $validated = $request->validate([
+            'host' => 'required',
+            'shop' => 'required',
+        ]);
+
+        return Inertia::render('Auth', [
+            ...$validated,
+            'step' => 'token',
+        ]);
+    }
+
     /**
      * @throws \PHPShopify\Exception\SdkException
      * @throws UnauthorizedException
@@ -27,6 +40,8 @@ class AuthController extends Controller
         }
 
         $shop = $request->input('shop');
+        $host = $request->input('host');
+
         ShopifySDK::config([
             'ShopUrl' => $shop,
             'ApiKey' => config('shopify-app.api_key'),
@@ -37,6 +52,14 @@ class AuthController extends Controller
             return: true,
         );
         if (filter_var($accessTokenOrAuthUrl, FILTER_VALIDATE_URL)) {
+            if ($request->input('embedded') === '1') {
+                return Inertia::render('Auth', [
+                    'step' => 'grant',
+                    'shop' => $shop,
+                    'host' => $host,
+                    'url' => $accessTokenOrAuthUrl,
+                ]);
+            }
             return redirect()->away($accessTokenOrAuthUrl);
         }
 
@@ -61,12 +84,22 @@ class AuthController extends Controller
             ],
         );
 
-        Cache::forever('host_'.$shop, $request->input('host'));
+        Cache::forever('host_'.$shop, $host);
         Cache::forever('frame-ancestor_'.$shop, 'https://'.$shop);
 
-        return Inertia::render('Token', [
+        $params = [
+            'step' => 'token',
             'shop' => $shop,
-            'host' => $request->input('host'),
-        ]);
+            'host' => $host,
+        ];
+
+        if ($request->input('embedded') === '1') {
+            return redirect()->route('auth.token', $params);
+        }
+        $apiKey = config('shopify-app.api_key');
+        $decodedHost = base64_decode($host, true);
+        return redirect()->away(
+            'https://'.$decodedHost.'/apps/'.$apiKey.'/auth/token?'.http_build_query($params)
+        );
     }
 }
