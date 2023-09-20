@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $table = config('shopify-app.user_model')->getTable();
+        $table = app(config('shopify-app.user_model'))->getTable();
         if (! $table) {
             return;
         }

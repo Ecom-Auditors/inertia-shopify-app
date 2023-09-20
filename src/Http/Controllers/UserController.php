@@ -27,7 +27,7 @@ class UserController extends Controller
                 'string',
                 'email',
                 'max:191',
-                Rule::unique(config('shopify-app.user_model')->getTable())->ignore(auth()->id()),
+                Rule::unique(app(config('shopify-app.user_model'))->getTable())->ignore(auth()->id()),
             ],
         ])->validateWithBag('updateUser');
 
