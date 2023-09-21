@@ -32,6 +32,6 @@ class ProtectIframe
         return $next($request)->header(
             'Content-Security-Policy',
             'frame-ancestors https://admin.shopify.com '.$frameAncestor,
-        );
+        )->header('X-Frame-Options', '');
     }
 }
