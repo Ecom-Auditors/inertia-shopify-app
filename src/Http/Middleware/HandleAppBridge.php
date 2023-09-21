@@ -10,6 +10,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 class HandleAppBridge
@@ -38,9 +39,11 @@ class HandleAppBridge
             if ($request->missing('shop')) {
                 throw new UnauthorizedException('Token exception in auth request.');
             }
+            $shopUrl = $request->input('shop');
 
             return redirect()->route('auth.callback', [
-                'shop' => $request->input('shop'),
+                'shop' => $shopUrl,
+                'host' => Cache::get('host_'.$shopUrl),
                 'embedded' => '1',
             ]);
         }
