@@ -5,6 +5,7 @@ namespace EcomAuditors\InertiaShopifyApp\Http\Middleware;
 use Closure;
 use EcomAuditors\InertiaShopifyApp\Exceptions\UnauthorizedException;
 use Exception;
+use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
@@ -19,15 +20,6 @@ class HandleAppBridge
     public function handle(Request $request, Closure $next): Response
     {
         $token = $request->bearerToken() ?: $request->query('token');
-        if (! $token) {
-            if ($request->missing('shop')) {
-                throw new UnauthorizedException('Missing shop in auth request.');
-            }
-
-            return redirect()->route('auth.callback', [
-                'shop' => $request->input('shop'),
-            ]);
-        }
 
         try {
             JWT::$leeway = 10;
@@ -39,7 +31,13 @@ class HandleAppBridge
                 Auth::guard(config('shopify-app.auth_guard'))->login($user);
             }
         } catch (Exception $e) {
-            throw new UnauthorizedException('Invalid token in auth request.');
+            if ($request->missing('shop')) {
+                throw new UnauthorizedException('Token exception in auth request.');
+            }
+
+            return redirect()->route('auth.callback', [
+                'shop' => $request->input('shop'),
+            ]);
         }
 
         return $next($request);

@@ -14,7 +14,7 @@ class ShareInertiaData
     {
         Inertia::share(array_filter([
             'auth.user' => fn () => $request->user()
-                ? $request->user()->only('id', 'name', 'email', 'shop')
+                ? $request->user()->only('id', 'name', 'email', 'shop', 'domain')
                 : null,
             'flash' => $request->session()->get('flash', []),
             'errorBags' => function () {
