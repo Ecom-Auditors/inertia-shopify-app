@@ -22,6 +22,10 @@ class HandleAppBridge
         $token = $request->bearerToken() ?: $request->query('token');
 
         try {
+            if (empty($token)) {
+                throw new UnauthorizedException('Token missing in auth request.');
+            }
+
             JWT::$leeway = 10;
             $payload = (array) JWT::decode($token, new Key(config('shopify-app.shared_secret'), 'HS256'));
             $domain = str_replace('https://', '', $payload['dest']);
@@ -37,6 +41,7 @@ class HandleAppBridge
 
             return redirect()->route('auth.callback', [
                 'shop' => $request->input('shop'),
+                'embedded' => '1',
             ]);
         }
 
