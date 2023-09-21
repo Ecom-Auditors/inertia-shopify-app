@@ -18,9 +18,15 @@ class HandleAppBridge
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $token = $request->query('token', $request->bearerToken());
+        $token = $request->bearerToken() ?: $request->query('token');
         if (! $token) {
-            throw new UnauthorizedException('Token missing from auth request.');
+            if ($request->missing('shop')) {
+                throw new UnauthorizedException('Missing shop in auth request.');
+            }
+
+            return redirect()->route('auth.callback', [
+                'shop' => $request->input('shop'),
+            ]);
         }
 
         try {
