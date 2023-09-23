@@ -31,7 +31,9 @@ class CreateSubscription
             'test' => config('shopify-app.billing.test', false),
             'name' => config('shopify-app.billing.name'),
             'trialDays' => config('shopify-app.billing.trial_days'),
-            'returnUrl' => route('billing.return'),
+            'returnUrl' => route('billing.return', [
+                'shop' => $shop->myshopify_domain,
+            ]),
             'lineItems' => []
         ];
 
