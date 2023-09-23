@@ -13,8 +13,8 @@ class CreateSubscription
     public function __invoke(HasClient $shop): string
     {
         $query = <<<Query
-        mutation appSubscriptionCreate(\$lineItems: [AppSubscriptionLineItemInput!]!, \$name: String!, \$returnUrl: URL!, \$trialDays: Int) {
-          appSubscriptionCreate(lineItems: \$lineItems, name: \$name, returnUrl: \$returnUrl, trialDays: \$trialDays) {
+        mutation appSubscriptionCreate(\$test: Boolean, \$lineItems: [AppSubscriptionLineItemInput!]!, \$name: String!, \$returnUrl: URL!, \$trialDays: Int) {
+          appSubscriptionCreate(\$test: Boolean, lineItems: \$lineItems, name: \$name, returnUrl: \$returnUrl, trialDays: \$trialDays) {
             appSubscription {
                 id
             }
@@ -28,6 +28,7 @@ class CreateSubscription
         Query;
 
         $variables = [
+            'test' => config('shopify-app.billing.test', false),
             'name' => config('shopify-app.billing.name'),
             'trialDays' => config('shopify-app.billing.trial_days'),
             'returnUrl' => route('billing.return'),

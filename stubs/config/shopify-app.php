@@ -15,6 +15,7 @@ return [
 
     'billing' => [
         'enabled' => false,
+        'test' => false,
 
         // 'name' => '',
         // 'trial_days' => 0,
