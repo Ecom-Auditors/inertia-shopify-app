@@ -74,7 +74,7 @@ class AuthController extends Controller
             'AccessToken' => $accessTokenOrAuthUrl,
         ]))->Shop->get();
 
-        $user = config('shopify-app.user_model')::firstOrCreate(
+        $user = config('shopify-app.user_model')::firstOrNew(
             [
                 'myshopify_domain' => $shop,
             ],
@@ -87,12 +87,11 @@ class AuthController extends Controller
             ],
         );
 
-        if ($user->uninstalled_at) {
+        if (!$user->exists || $user->uninstalled_at) {
             $registerWebhooks($user);
-
-            $user->uninstalled_at = null;
-            $user->save();
         }
+        $user->uninstalled_at = null;
+        $user->save();
 
         Cache::forever('host_'.$shop, $host);
         Cache::forever('frame-ancestor_'.$shop, 'https://'.$shop);
