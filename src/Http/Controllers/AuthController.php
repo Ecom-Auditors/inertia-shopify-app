@@ -74,22 +74,17 @@ class AuthController extends Controller
             'AccessToken' => $accessTokenOrAuthUrl,
         ]))->Shop->get();
 
-        $user = config('shopify-app.user_model')::firstOrNew(
-            [
-                'myshopify_domain' => $shop,
-            ],
-            [
-                'domain' => $shopData['domain'],
-                'email' => $shopData['email'],
-                'name' => $shopData['shop_owner'],
-                'access_token' => $accessTokenOrAuthUrl,
-                'shop' => $shopData['name'],
-            ],
-        );
+        $user = config('shopify-app.user_model')::firstOrNew(['myshopify_domain' => $shop]);
 
         if (!$user->exists || $user->uninstalled_at) {
             $registerWebhooks($user);
         }
+
+        $user->domain = $shopData['domain'];
+        $user->email = $shopData['domain'];
+        $user->name = $shopData['shop_owner'];
+        $user->shop = $shopData['name'];
+        $user->access_token = $accessTokenOrAuthUrl;
         $user->uninstalled_at = null;
         $user->save();
 
