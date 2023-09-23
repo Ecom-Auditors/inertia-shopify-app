@@ -21,7 +21,8 @@ class AuthController extends Controller
         $validated = $request->validate([
             'host' => 'required',
             'shop' => 'required',
-            'url' => 'nullable',
+            'url' => 'nullable|string',
+            'target' => 'nullable|string',
         ]);
 
         return Inertia::render('Auth', $validated);
@@ -101,7 +102,7 @@ class AuthController extends Controller
         Cache::forever('frame-ancestor_'.$shop, 'https://'.$shop);
 
         if ($request->input('embedded') === '1') {
-            return redirect()->route('auth.token', $params);
+            return Inertia::render('Auth', $params);
         }
         $apiKey = config('shopify-app.api_key');
         $decodedHost = base64_decode($host, true);
