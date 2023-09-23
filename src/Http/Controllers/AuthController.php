@@ -60,10 +60,13 @@ class AuthController extends Controller
             return: true,
         );
         if (filter_var($accessTokenOrAuthUrl, FILTER_VALIDATE_URL)) {
-            return Inertia::render('Auth', [
-                ...$params,
-                'url' => $accessTokenOrAuthUrl,
-            ]);
+            if ($request->input('embedded') === '1') {
+                return Inertia::render('Auth', [
+                    ...$params,
+                    'url' => $accessTokenOrAuthUrl,
+                ]);
+            }
+            return redirect()->away($accessTokenOrAuthUrl);
         }
 
         if (!isset($accessTokenOrAuthUrl)) {
@@ -98,6 +101,13 @@ class AuthController extends Controller
         Cache::forever('host_'.$shop, $host);
         Cache::forever('frame-ancestor_'.$shop, 'https://'.$shop);
 
-        return Inertia::render('Auth', $params);
+        if ($request->input('embedded') === '1') {
+            return Inertia::render('Auth', $params);
+        }
+        $apiKey = config('shopify-app.api_key');
+        $decodedHost = base64_decode($host, true);
+        return redirect()->away(
+            'https://'.$decodedHost.'/apps/'.$apiKey.'/auth/token?'.http_build_query($params)
+        );
     }
 }

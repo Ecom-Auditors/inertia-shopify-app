@@ -11,6 +11,8 @@ use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use PHPShopify\AuthHelper;
+use PHPShopify\ShopifySDK;
 use Symfony\Component\HttpFoundation\Response;
 
 class HandleAppBridge
@@ -20,21 +22,35 @@ class HandleAppBridge
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $token = $request->bearerToken() ?: $request->query('token');
-
         try {
-            if (empty($token)) {
+            $domain = null;
+
+            if ($token = $request->bearerToken()) {
+                JWT::$leeway = 10;
+                $payload = (array) JWT::decode($token, new Key(config('shopify-app.shared_secret'), 'HS256'));
+                $domain = str_replace('https://', '', $payload['dest']);
+            }
+
+            if ($request->has('hmac')) {
+                ShopifySDK::config([
+                    'ShopUrl' => $request->input('shop'),
+                    'ApiKey' => config('shopify-app.api_key'),
+                    'SharedSecret' => config('shopify-app.shared_secret'),
+                ]);
+                if (AuthHelper::verifyShopifyRequest()) {
+                    $domain = $request->input('shop');
+                }
+            }
+
+            if (!$domain) {
                 throw new UnauthorizedException('Token missing in auth request.');
             }
 
-            JWT::$leeway = 10;
-            $payload = (array) JWT::decode($token, new Key(config('shopify-app.shared_secret'), 'HS256'));
-            $domain = str_replace('https://', '', $payload['dest']);
+            $user = config('shopify-app.user_model')::where('myshopify_domain', $domain)
+                ->whereNotNull('access_token')
+                ->firstOrFail();
 
-            if (!Auth::guard(config('shopify-app.auth_guard'))->check()) {
-                $user = config('shopify-app.user_model')::where('myshopify_domain', $domain)->firstOrFail();
-                Auth::guard(config('shopify-app.auth_guard'))->login($user);
-            }
+            Auth::guard(config('shopify-app.auth_guard'))->login($user);
         } catch (Exception $e) {
             if ($request->missing('shop')) {
                 throw new UnauthorizedException('Token exception in auth request.');

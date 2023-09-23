@@ -20,6 +20,7 @@ class WebhookController
         }
 
         if ($shop && $topic === 'app/uninstalled') {
+            $shop->access_token = null;
             $shop->recurring_application_charge_id = null;
             $shop->billing_status = null;
             $shop->uninstalled_at = now();
