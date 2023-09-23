@@ -2,8 +2,10 @@
 
 use EcomAuditors\InertiaShopifyApp\Http\Controllers\AuthController;
 use EcomAuditors\InertiaShopifyApp\Http\Controllers\UserController;
+use EcomAuditors\InertiaShopifyApp\Http\Controllers\WebhookController;
 use EcomAuditors\InertiaShopifyApp\Http\Middleware\HandleAppBridge;
 use EcomAuditors\InertiaShopifyApp\Http\Middleware\ProtectIframe;
+use EcomAuditors\InertiaShopifyApp\Http\Middleware\VerifyWebhook;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', ProtectIframe::class])->group(function () {
@@ -15,3 +17,5 @@ Route::middleware(['web', ProtectIframe::class])->group(function () {
         Route::put('/user/profile', [UserController::class, 'update'])->name('user.update');
     });
 });
+
+Route::any('webhooks/shopify', WebhookController::class)->name('webhooks.shopify')->middleware(VerifyWebhook::class);

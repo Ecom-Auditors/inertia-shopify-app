@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('myshopify_domain')->nullable();
             $table->string('access_token')->nullable();
             $table->string('shop')->nullable();
+            $table->unsignedBigInteger('recurring_application_charge_id')->nullable();
+            $table->string('billing_status')->nullable();
+            $table->timestamp('uninstalled_at')->nullable();
         });
     }
 
