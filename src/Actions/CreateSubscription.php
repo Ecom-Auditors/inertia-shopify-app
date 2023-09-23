@@ -67,6 +67,6 @@ class CreateSubscription
 
         $response = $shop->shopifyClient()->GraphQL->post($query, null, null, $variables);
 
-        return $response['appSubscriptionCreate']['confirmationUrl'];
+        return $response['confirmationUrl'];
     }
 }
