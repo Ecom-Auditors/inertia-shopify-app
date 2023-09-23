@@ -15,7 +15,7 @@ class WebhookController
         $shop = config('shopify-app.user_model')::firstWhere('myshopify_domain', $domain);
 
         if ($shop && $topic === 'app_subscriptions/update') {
-            $shop->billing_status = $request->input('payload.app_subscription.status');
+            $shop->billing_status = strtolower($request->input('app_subscription.status'));
             $shop->save();
         }
 

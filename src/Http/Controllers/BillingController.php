@@ -23,7 +23,7 @@ class BillingController
         }
 
         $shop->recurring_application_charge_id = $recurringApplicationCharge['id'];
-        $shop->billing_status = $recurringApplicationCharge['status'];
+        $shop->billing_status = strtolower($recurringApplicationCharge['status']);
         $shop->save();
 
         return redirect()->route('auth.token', [
