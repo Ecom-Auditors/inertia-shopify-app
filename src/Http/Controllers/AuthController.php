@@ -77,7 +77,7 @@ class AuthController extends Controller
         $user = config('shopify-app.user_model')::firstOrNew(['myshopify_domain' => $shop]);
 
         $user->domain = $shopData['domain'];
-        $user->email = $shopData['domain'];
+        $user->email = $shopData['email'];
         $user->name = $shopData['shop_owner'];
         $user->shop = $shopData['name'];
         $user->access_token = $accessTokenOrAuthUrl;
