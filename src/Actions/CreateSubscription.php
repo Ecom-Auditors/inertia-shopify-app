@@ -14,7 +14,7 @@ class CreateSubscription
     {
         $query = <<<Query
         mutation appSubscriptionCreate(\$test: Boolean, \$lineItems: [AppSubscriptionLineItemInput!]!, \$name: String!, \$returnUrl: URL!, \$trialDays: Int) {
-          appSubscriptionCreate(\$test: Boolean, lineItems: \$lineItems, name: \$name, returnUrl: \$returnUrl, trialDays: \$trialDays) {
+          appSubscriptionCreate(test: \$test, lineItems: \$lineItems, name: \$name, returnUrl: \$returnUrl, trialDays: \$trialDays) {
             appSubscription {
                 id
             }
