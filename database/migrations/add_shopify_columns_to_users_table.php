@@ -15,6 +15,7 @@ return new class extends Migration
 
         Schema::table($table, function (Blueprint $table) {
             $table->string('domain')->nullable();
+            $table->string('myshopify_domain')->nullable();
             $table->string('access_token')->nullable();
             $table->string('shop')->nullable();
         });

@@ -9,7 +9,7 @@ trait ShopifyClient
     public function shopifyClient(): ShopifySDK
     {
         $config = [
-            'ShopUrl' => $this->domain,
+            'ShopUrl' => $this->myshopify_domain,
             'AccessToken' => $this->access_token,
         ];
 

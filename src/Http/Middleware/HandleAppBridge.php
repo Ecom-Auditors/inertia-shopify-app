@@ -32,7 +32,7 @@ class HandleAppBridge
             $domain = str_replace('https://', '', $payload['dest']);
 
             if (!Auth::guard(config('shopify-app.auth_guard'))->check()) {
-                $user = config('shopify-app.user_model')::where('domain', $domain)->firstOrFail();
+                $user = config('shopify-app.user_model')::where('myshopify_domain', $domain)->firstOrFail();
                 Auth::guard(config('shopify-app.auth_guard'))->login($user);
             }
         } catch (Exception $e) {

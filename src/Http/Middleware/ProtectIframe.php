@@ -21,7 +21,7 @@ class ProtectIframe
             throw new UnauthorizedException('Shop missing from auth response.');
         }
 
-        $shopUrl = $request->input('shop', optional($request->user())->domain);
+        $shopUrl = $request->input('shop', optional($request->user())->myshopify_domain);
 
         $host = Cache::get('host_'.$shopUrl);
         $frameAncestor = Cache::get('frame-ancestor_'.$shopUrl);
