@@ -44,6 +44,10 @@ class AuthController extends Controller
 
         $shop = $request->input('shop');
         $host = $request->input('host');
+        $params = [
+            'shop' => $shop,
+            'host' => $host,
+        ];
 
         ShopifySDK::config([
             'ShopUrl' => $shop,
@@ -57,8 +61,7 @@ class AuthController extends Controller
         if (filter_var($accessTokenOrAuthUrl, FILTER_VALIDATE_URL)) {
             if ($request->input('embedded') === '1') {
                 return Inertia::render('Auth', [
-                    'shop' => $shop,
-                    'host' => $host,
+                    ...$params,
                     'url' => $accessTokenOrAuthUrl,
                 ]);
             }
@@ -84,6 +87,11 @@ class AuthController extends Controller
 
         if (!$user->exists || $user->uninstalled_at) {
             $registerWebhooks($user);
+
+            if (config('shopify-app.billing.enabled')) {
+                $confirmationUrl = $createSubscription($user);
+                $params['url'] = $confirmationUrl;
+            }
         }
 
         $user->uninstalled_at = null;
@@ -91,16 +99,6 @@ class AuthController extends Controller
 
         Cache::forever('host_'.$shop, $host);
         Cache::forever('frame-ancestor_'.$shop, 'https://'.$shop);
-
-        $params = [
-            'shop' => $shop,
-            'host' => $host,
-        ];
-
-        if (config('shopify-app.billing.enabled') && $user->billing_status !== 'active') {
-            $confirmationUrl = $createSubscription($user);
-            $params['url'] = $confirmationUrl;
-        }
 
         if ($request->input('embedded') === '1') {
             return redirect()->route('auth.token', $params);
