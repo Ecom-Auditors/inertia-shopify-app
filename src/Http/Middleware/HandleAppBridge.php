@@ -3,7 +3,6 @@
 namespace EcomAuditors\InertiaShopifyApp\Http\Middleware;
 
 use Closure;
-use EcomAuditors\InertiaShopifyApp\Interfaces\HasClient;
 use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
@@ -59,10 +58,7 @@ class HandleAppBridge
 
     protected function getShop(Request $request): ?string
     {
-        return $request->input(
-            'shop',
-            $request->session()->get('shop'),
-        );
+        return $request->input('shop');
     }
 
     protected function getHost(Request $request): string
