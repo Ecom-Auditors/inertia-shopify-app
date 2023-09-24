@@ -31,17 +31,6 @@ class HandleAppBridge
                 $domain = str_replace('https://', '', $payload['dest']);
             }
 
-            if ($request->has('hmac')) {
-                ShopifySDK::config([
-                    'ShopUrl' => $request->input('shop'),
-                    'ApiKey' => config('shopify-app.api_key'),
-                    'SharedSecret' => config('shopify-app.shared_secret'),
-                ]);
-                if (AuthHelper::verifyShopifyRequest()) {
-                    $domain = $request->input('shop');
-                }
-            }
-
             if (!$domain) {
                 throw new UnauthorizedException('Token missing in auth request.');
             }
@@ -57,10 +46,9 @@ class HandleAppBridge
             }
             $shopUrl = $request->input('shop');
 
-            return redirect()->route('auth.callback', [
+            return redirect()->route('auth.token', [
                 'shop' => $shopUrl,
                 'host' => Cache::get('host_'.$shopUrl),
-                'embedded' => '1',
             ]);
         }
 
