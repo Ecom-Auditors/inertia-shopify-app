@@ -4,7 +4,6 @@ namespace EcomAuditors\InertiaShopifyApp\Http\Controllers;
 
 use EcomAuditors\InertiaShopifyApp\Actions\CreateSubscription;
 use EcomAuditors\InertiaShopifyApp\Actions\RegisterWebhooks;
-use EcomAuditors\InertiaShopifyApp\Exceptions\UnauthorizedException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -13,6 +12,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use PHPShopify\AuthHelper;
 use PHPShopify\ShopifySDK;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class AuthController extends Controller
 {
@@ -30,7 +30,6 @@ class AuthController extends Controller
 
     /**
      * @throws \PHPShopify\Exception\SdkException
-     * @throws UnauthorizedException
      * @throws \PHPShopify\Exception\CurlException
      * @throws \PHPShopify\Exception\ApiException
      */
@@ -38,9 +37,9 @@ class AuthController extends Controller
         Request $request,
         RegisterWebhooks $registerWebhooks,
         CreateSubscription $createSubscription,
-    ): Response|RedirectResponse {
+    ): Response|RedirectResponse|\Illuminate\Http\Response {
         if ($request->isNotFilled('shop')) {
-            throw new UnauthorizedException('Shop missing from auth response.');
+            return response('Shop missing from auth response.', HttpResponse::HTTP_UNAUTHORIZED);
         }
 
         $shop = $request->input('shop');
@@ -70,7 +69,7 @@ class AuthController extends Controller
         }
 
         if (!isset($accessTokenOrAuthUrl)) {
-            throw new UnauthorizedException('Access token missing from auth response.');
+            return response('Access token missing from auth response.', HttpResponse::HTTP_UNAUTHORIZED);
         }
 
         $shopData = (new ShopifySDK([

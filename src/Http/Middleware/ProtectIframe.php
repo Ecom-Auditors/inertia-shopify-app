@@ -3,7 +3,6 @@
 namespace EcomAuditors\InertiaShopifyApp\Http\Middleware;
 
 use Closure;
-use EcomAuditors\InertiaShopifyApp\Exceptions\UnauthorizedException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
@@ -12,13 +11,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ProtectIframe
 {
-    /**
-     * @throws UnauthorizedException
-     */
     public function handle(Request $request, Closure $next): Response
     {
         if ($request->missing('shop') && !Auth::guard(config('shopify-app.auth_guard'))->check()) {
-            throw new UnauthorizedException('Shop missing from auth response.');
+            return response('Shop missing from auth response.', Response::HTTP_UNAUTHORIZED);
         }
 
         $shopUrl = $request->input('shop', optional($request->user())->myshopify_domain);

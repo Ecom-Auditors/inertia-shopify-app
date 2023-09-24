@@ -3,23 +3,16 @@
 namespace EcomAuditors\InertiaShopifyApp\Http\Middleware;
 
 use Closure;
-use EcomAuditors\InertiaShopifyApp\Exceptions\UnauthorizedException;
 use Exception;
-use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use PHPShopify\AuthHelper;
-use PHPShopify\ShopifySDK;
 use Symfony\Component\HttpFoundation\Response;
 
 class HandleAppBridge
 {
-    /**
-     * @throws UnauthorizedException
-     */
     public function handle(Request $request, Closure $next): Response
     {
         try {
@@ -32,7 +25,7 @@ class HandleAppBridge
             }
 
             if (!$domain) {
-                throw new UnauthorizedException('Token missing in auth request.');
+                throw new Exception('Token missing in auth request.');
             }
 
             $user = config('shopify-app.user_model')::where('myshopify_domain', $domain)
@@ -42,7 +35,7 @@ class HandleAppBridge
             Auth::guard(config('shopify-app.auth_guard'))->login($user);
         } catch (Exception $e) {
             if ($request->missing('shop')) {
-                throw new UnauthorizedException('Token exception in auth request.');
+                return response('Token exception in auth request.', Response::HTTP_UNAUTHORIZED);
             }
             $shopUrl = $request->input('shop');
 

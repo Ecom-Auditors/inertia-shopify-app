@@ -3,7 +3,6 @@
 namespace EcomAuditors\InertiaShopifyApp\Http\Middleware;
 
 use Closure;
-use EcomAuditors\InertiaShopifyApp\Exceptions\UnauthorizedException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,7 +20,7 @@ class VerifyWebhook
         ));
 
         if (empty($hmac) || !hash_equals($hmac, $calculatedHmac)) {
-            throw new UnauthorizedException('Invalid webhook signature.');
+            return response('Invalid webhook signature.', Response::HTTP_UNAUTHORIZED);
         }
 
         return $next($request);
