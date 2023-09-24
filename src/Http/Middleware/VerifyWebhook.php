@@ -11,7 +11,7 @@ class VerifyWebhook
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $hmac = $request->header('x-shopify-hmac-sha256');
+        $hmac = $_SERVER['HTTP_X_SHOPIFY_HMAC_SHA256'] ?? null;
         $contents = file_get_contents('php://input');
         $calculatedHmac = base64_encode(hash_hmac(
             'sha256',

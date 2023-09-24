@@ -9,8 +9,8 @@ class WebhookController
 {
     public function __invoke(Request $request): Response
     {
-        $topic = $request->header('x-shopify-topic');
-        $domain = $request->header('x-shopify-shop-domain');
+        $topic = $_SERVER['HTTP_X_SHOPIFY_TOPIC'];
+        $domain = $_SERVER['HTTP_X_SHOPIFY_SHOP_DOMAIN'];
 
         $shop = config('shopify-app.user_model')::firstWhere('myshopify_domain', $domain);
 
