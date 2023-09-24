@@ -22,7 +22,7 @@ class AuthController extends Controller
             'host' => 'required',
             'shop' => 'required',
             'url' => 'nullable|string',
-            'target' => 'nullable|string',
+            'dest' => 'nullable|string',
         ]);
 
         return Inertia::render('Auth', $validated);

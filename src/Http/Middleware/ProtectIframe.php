@@ -18,6 +18,7 @@ class ProtectIframe
         }
 
         $shopUrl = $request->input('shop', optional($request->user())->myshopify_domain);
+        $request->session()->put('shop', $shopUrl);
 
         $host = Cache::get('host_'.$shopUrl);
         $frameAncestor = Cache::get('frame-ancestor_'.$shopUrl);
