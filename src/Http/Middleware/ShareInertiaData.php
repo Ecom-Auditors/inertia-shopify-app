@@ -13,9 +13,6 @@ class ShareInertiaData
     public function handle(Request $request, Closure $next): Response
     {
         Inertia::share(array_filter([
-            'auth.user' => fn () => $request->user()
-                ? $request->user()->only('id', 'name', 'email', 'shop', 'domain', 'myshopify_domain')
-                : null,
             'flash' => $request->session()->get('flash', []),
             'errorBags' => function () {
                 return collect(optional(Session::get('errors'))->getBags() ?: [])->mapWithKeys(function ($bag, $key) {
