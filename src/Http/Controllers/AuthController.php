@@ -77,12 +77,16 @@ class AuthController extends Controller
             'AccessToken' => $accessTokenOrAuthUrl,
         ]))->Shop->get();
 
-        $user = config('shopify-app.user_model')::firstOrNew(['myshopify_domain' => $shop]);
+        $user = config('shopify-app.user_model')::firstOrNew(
+            ['myshopify_domain' => $shop],
+            [
+                'email' => $shopData['email'],
+                'name' => $shopData['shop_owner'],
+                'shop' => $shopData['name'],
+            ]
+        );
 
         $user->domain = $shopData['domain'];
-        $user->email = $shopData['email'];
-        $user->name = $shopData['shop_owner'];
-        $user->shop = $shopData['name'];
         $user->access_token = $accessTokenOrAuthUrl;
 
         if (!$user->exists || $user->uninstalled_at) {
