@@ -89,7 +89,7 @@ class AuthController extends Controller
         $user->domain = $shopData['domain'];
         $user->access_token = $accessTokenOrAuthUrl;
 
-        if (!$user->exists || $user->uninstalled_at) {
+        if (!$user->exists || $user->uninstalled_at || $user->billing_status !== 'active') {
             $registerWebhooks($user);
 
             if (config('shopify-app.billing.enabled')) {
