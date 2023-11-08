@@ -29,7 +29,7 @@ class WebhookController
 
         $jobClass = config('shopify-app.webhooks')[$topic] ?? null;
         if ($jobClass) {
-            $jobClass::dispatch($request->all());
+            $jobClass::dispatch($shop, $request->all());
         }
 
         return response('ok');
